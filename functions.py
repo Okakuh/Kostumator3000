@@ -1,5 +1,4 @@
-from time import sleep
-from os import listdir, path
+from os import path
 from shutil import rmtree
 from PIL import Image
 from subprocess import Popen

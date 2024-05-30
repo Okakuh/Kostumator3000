@@ -1,13 +1,12 @@
 from time import strftime, time_ns, sleep
 from os import listdir, path, getcwd, mkdir, renames, walk
 from shutil import copy, copytree
-from PyQt6 import uic, QtCore, QtGui
+from PyQt6 import uic
+from PyQt6.QtWidgets import QApplication, QWidget
 import threading
 from pyperclip import copy as copy_to_clipboard
-import pyperclip
 import sys
 import traceback
-from PyQt6.QtWidgets import QApplication, QMainWindow, QPushButton, QMessageBox, QWidget
 
 from functions import *
 from cclass import *

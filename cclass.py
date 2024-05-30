@@ -1,7 +1,7 @@
-from PyQt6.QtWidgets import QDialog, QDialogButtonBox, QVBoxLayout, QLabel, QLineEdit, QWidget, QPushButton, \
+from PyQt6.QtWidgets import QDialog, QDialogButtonBox, QVBoxLayout, QLabel, QLineEdit, QPushButton, \
     QTextEdit
 from PyQt6.QtGui import QIcon, QPixmap
-from PyQt6.QtCore import QSize, QRect
+from PyQt6.QtCore import QSize
 from os import path
 
 
