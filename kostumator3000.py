@@ -1,8 +1,7 @@
 from time import strftime, time_ns, sleep
 from os import listdir, path, getcwd, mkdir, renames, walk
 from shutil import copy, copytree
-from PyQt6 import uic
-from PyQt6 import QtCore, QtGui
+from PyQt6 import uic, QtCore, QtGui
 import threading
 from pyperclip import copy as copy_to_clipboard
 import pyperclip
@@ -551,7 +550,6 @@ class Costumer(QWidget):
                     f"{Costumer.save_folder_path}\\{folder_name_underscore}\\{folder_name}_icons_{button.name}")
 
     def closeEvent(self, event):
-        d = 1 / 0
         Costumer.kill_threads = True
         self.created_folder_check_thread.join()
         self.preset_folder_check_thread.join()
@@ -562,17 +560,17 @@ class Costumer(QWidget):
         event.accept()
 
     def watch_preset_folder_thread(self) -> None:
-        not_active = True
+        costumator_not_active = True
 
         while True:
             if Costumer.kill_threads:
                 break
 
             if not self.isActiveWindow():
-                not_active = True
+                costumator_not_active = True
 
-            if self.isActiveWindow() and not_active:
-                not_active = False
+            if self.isActiveWindow() and costumator_not_active:
+                costumator_not_active = False
                 self.update_presets()
 
             sleep(0.1)
