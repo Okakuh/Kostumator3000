@@ -17,7 +17,7 @@ armor_texture_list = []
 
 save_folder_path = ''
 
-button_enabled_style = "background-color: rgb(30, 30, 30); " \
+button_enabled_style = "background-color: rgb(31, 30, 30); " \
                  "border-radius: 5px; " \
                  "border: 2px solid  rgb(74, 74, 74); " \
                  "color: rgb(255, 255, 255)"
