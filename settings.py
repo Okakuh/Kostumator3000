@@ -9,7 +9,7 @@ title: str = f"{name} {version}"
 folder_suffix = "_"
 
 # Folder names
-name_in_preset_3d: str = "3D"
+name_in_preset_3d: str = "3d"
 name_in_preset_armor_files_properties: str = "armor_file_properties"
 name_in_preset_overlay_images: str = "overlay_images"
 name_in_preset_ways_to_icons: str = "ways_to_icons"
