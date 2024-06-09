@@ -12,7 +12,7 @@ folder_suffix = "_"
 name_in_preset_3d: str = "3d"
 name_in_preset_armor_files_properties: str = "armor_file_properties"
 name_in_preset_overlay_images: str = "overlay_images"
-name_in_preset_ways_to_icons: str = "ways_to_icons"
+name_in_preset_ways_to_icons: str = "icons"
 
 
 # Pathes and files
