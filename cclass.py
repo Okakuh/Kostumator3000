@@ -1,12 +1,17 @@
 from PyQt6.QtWidgets import QDialog, QDialogButtonBox, QVBoxLayout, QLabel, QLineEdit, QPushButton, \
     QTextEdit
-from PyQt6.QtGui import QIcon, QPixmap
+from PyQt6.QtGui import QIcon, QPixmap, QPainter, QIcon
 from PyQt6.QtCore import QSize
-from os import path
+from os import path, listdir
+from pathlib import Path
+
+import settings
+import settings as ss
+import functions
 
 
 class UnicodeConvertorSettings(QDialog):
-    def __init__(self, title: str, message: str, symbols_unicode_convertor_will_skip: str) -> None:
+    def __init__(self, title: str, message: str, symbols_unicode_convertor_will_skip: str):
         self.title = title
         self.message = message
         self.symbols_unicode_convertor_will_skip = symbols_unicode_convertor_will_skip
@@ -21,8 +26,7 @@ class UnicodeConvertorSettings(QDialog):
         self.buttonBox.rejected.connect(self.reject)
 
         self.layout = QVBoxLayout()
-        message = QLabel(self.message)
-        self.layout.addWidget(message)
+        self.layout.addWidget(QLabel(message))
 
         self.symbols = QTextEdit(self)
 
@@ -34,7 +38,7 @@ class UnicodeConvertorSettings(QDialog):
 
 
 class MyLineEdit(QLineEdit):
-    def __init__(self, parent, maket_text_edit: QLineEdit, *args, **kwargs) -> None:
+    def __init__(self, parent, maket_text_edit: QLineEdit, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
         self.parent_self = parent
 
@@ -44,34 +48,29 @@ class MyLineEdit(QLineEdit):
         self.setFont(maket_text_edit.font())
 
     def dragEnterEvent(self, event) -> None:
-        if MyLineEdit.check(event.mimeData().text()):
-            event.accept()
-        else:
-            event.ignore()
+        dropped_path = event.mimeData().text()
+        if "file:///" in dropped_path:
+            if dropped_path.count("file:///") == 1:
+                if path.isdir(dropped_path.removeprefix("file:///")):
+                    event.accept()
+                    return
+        event.ignore()
 
     def dropEvent(self, event) -> None:
         event.accept()
-        file = event.mimeData().text().removeprefix("file:///")
+        dropped_path = event.mimeData().text().removeprefix("file:///")
 
-        self.setText(file)
+        self.setText(dropped_path)
         self.parent_self.save_path_changed()
-        self.parent_self.save_folder_path = file
-
-    @staticmethod
-    def check(pahtes: str) -> bool:
-        if "file:///" in pahtes:
-            if pahtes.count("file:///") == 1:
-                path_to_drop = pahtes.removeprefix("file:///")
-                if path.isdir(path_to_drop):
-                    return True
-        return False
+        self.parent_self.p_save_folder = dropped_path
 
 
-class CustomDialog(QDialog):
-    def __init__(self, title: str, message: str) -> None:
+class AskSureDialog(QDialog):
+    def __init__(self, title: str, message: str):
+        super().__init__()
+
         self.title = title
         self.message = message
-        super().__init__()
 
         self.setWindowTitle(self.title)
 
@@ -88,24 +87,28 @@ class CustomDialog(QDialog):
         self.setLayout(self.layout)
 
 
-class TextureButton(QPushButton):
-    def __init__(self, parent, name: str, maket_button: QPushButton, default_icon: str, *args, **kwargs) -> None:
-        super().__init__(parent, *args, **kwargs)
-        self.my_parent = parent
-        self.name = name
+class IconButton(QPushButton):
+    def __init__(self, parent, folder_in_preset: str, maket_button: QPushButton, default_icon: str,
+                 *args, **kwargs):
+        super().__init__(parent, *args, **kwargs)  
         self.default_icon = default_icon
+        self.user_icon = default_icon
+        self.folder_in_preset = folder_in_preset
 
-        self.icon = self.default_icon[:]
         self.icon_width = maket_button.iconSize().width()
         self.icon_height = maket_button.iconSize().height()
 
         self.setAcceptDrops(True)
         self.setGeometry(maket_button.geometry())
         self.setIconSize(QSize(self.icon_width, self.icon_height))
-        self.setIcon(QIcon(QPixmap(self.default_icon).scaled(self.icon_width, self.icon_height)))
         self.setStyleSheet(maket_button.styleSheet())
 
-        self.clicked.connect(self.clear_and_set_default)
+        self.set_icon(QPixmap(self.user_icon))
+
+        self.clicked.connect(self.clear)
+
+        self.file_id = 0
+        self.last_preset = None
 
     def dragEnterEvent(self, event) -> None:
 
@@ -120,23 +123,120 @@ class TextureButton(QPushButton):
     def dropEvent(self, event) -> None:
         first_file = event.mimeData().text().replace('file:', '').split('///')[1].strip()
 
-        self.setIcon(QIcon(QPixmap(first_file).scaled(self.icon_width, self.icon_height)))
-        self.icon = first_file
+        self.user_icon = first_file
+        self.set_icon(QPixmap(first_file))
 
-        if self.name in self.my_parent.icons_buttons and self not in self.my_parent.icons_list:
-            self.my_parent.icons_list.append(self)
+    def clear(self) -> None:
+        self.user_icon = self.default_icon
+        self.set_icon(QPixmap(self.user_icon))
 
-        if self.name in self.my_parent.armor_buttons and self not in self.my_parent.armor_texture_list:
-            self.my_parent.armor_texture_list.append(self)
+    def set_icon(self, icon: QPixmap) -> None:
+        self.setIcon(QIcon(icon.scaled(self.icon_width, self.icon_height)))
 
-    def clear_and_set_default(self) -> None:
-        self.setIcon(QIcon(QPixmap(self.default_icon).scaled(self.icon_width, self.icon_height)))
-        self.icon = self.default_icon[:]
+    def has_user_icon(self) -> bool:
+        return self.default_icon != self.user_icon and self.user_icon != settings.p_icon_button_disabled
 
-        if self.name in self.my_parent.icons_buttons:
-            if self in self.my_parent.icons_list:
-                self.my_parent.icons_list.remove(self)
+    def get_icon(self) -> str:
+        return self.user_icon
 
-        if self.name in self.my_parent.armor_buttons:
-            if self in self.my_parent.armor_texture_list:
-                self.my_parent.armor_texture_list.remove(self)
+    def slide_show(self, current_preset):
+        if not self.isEnabled():
+            return
+
+        if not self.has_user_icon():
+            return
+
+        path_to_folder = f"{settings.p_fldr_presets}/{current_preset}/{settings.name_in_preset_ways_to_icons}/{self.folder_in_preset}"
+
+        files_properties = listdir(path_to_folder)
+        if not files_properties:
+            return
+
+        if self.last_preset != current_preset:
+            self.last_preset = current_preset
+            self.file_id = 0
+
+        if self.file_id + 1 > len(files_properties):
+            self.file_id = 0
+
+        file_properties_name = Path(files_properties[self.file_id]).stem
+        path_to_overlay_image = f"{settings.p_fldr_presets}/{current_preset}/{settings.name_in_preset_overlay_images}/{file_properties_name}.png"
+
+        self.set_icon(functions.merge_images(self.user_icon, path_to_overlay_image))
+
+        self.file_id += 1
+
+    def disable(self) -> None:
+        self.setDisabled(True)
+        self.set_icon(QPixmap(settings.p_icon_button_disabled))
+
+    def enable(self) -> None:
+        self.setEnabled(True)
+        self.set_icon(QPixmap(self.default_icon))
+
+    def valid(self) -> bool:
+        return self.has_user_icon() and self.isEnabled()
+
+
+class ArmorButton(QPushButton):
+    def __init__(self, parent, maket_button: QPushButton, default_icon: str, *args, **kwargs):
+        super().__init__(parent, *args, **kwargs)
+        self.my_parent = parent
+
+        self.default_icon = default_icon
+        self.user_icon = default_icon
+
+        self.icon_width = maket_button.iconSize().width()
+        self.icon_height = maket_button.iconSize().height()
+
+        self.setAcceptDrops(True)
+        self.setGeometry(maket_button.geometry())
+        self.setIconSize(QSize(self.icon_width, self.icon_height))
+        self.setStyleSheet(maket_button.styleSheet())
+
+        self.set_icon(QPixmap(self.user_icon))
+
+        self.clicked.connect(self.clear)
+
+    def dragEnterEvent(self, event) -> None:
+
+        if "file:///" in event.mimeData().text():
+            if event.mimeData().text().replace('file:', '').split('///')[1].strip().split('.')[-1].lower() == 'png':
+                event.accept()
+            else:
+                event.ignore()
+        else:
+            event.ignore()
+
+    def dropEvent(self, event) -> None:
+        first_file = event.mimeData().text().replace('file:', '').split('///')[1].strip()
+
+        self.user_icon = first_file
+        self.set_icon(QPixmap(first_file))
+
+    def clear(self) -> None:
+        self.user_icon = self.default_icon
+        self.set_icon(QPixmap(self.user_icon))
+
+    def set_icon(self, icon: QPixmap) -> None:
+        self.setIcon(QIcon(icon.scaled(self.icon_width, self.icon_height)))
+
+    def has_user_icon(self) -> bool:
+        return self.default_icon != self.user_icon
+
+    def get_icon(self) -> str:
+        return self.user_icon
+
+    def valid(self) -> bool:
+        return self.has_user_icon() and self.isEnabled()
+
+
+class ErrorID:
+    def __init__(self):
+        self.__error_id = 0
+
+    def set_id(self, error_id: int) -> None:
+        self.__error_id = error_id
+
+    def get_id(self) -> int:
+        return self.__error_id

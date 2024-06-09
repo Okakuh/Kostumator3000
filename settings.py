@@ -1,28 +1,57 @@
 from os import getcwd
 
-icons_buttons = ['helmet', 'chestplate', 'leggings', 'boots']
-armor_buttons = ['layer_1', 'layer_2']
+name: str = "Kostumator3000"
+version: str = "1.0"
 
-main_path = getcwd()
+title: str = f"{name} {version}"
 
-settings_json = f"{main_path}\\program\\settings.json"
-path_to_presets = f"{main_path}\\program\\presets"
-make_unicode_will_skip = ""
+# Main costume folder suffix
+folder_suffix = "_"
 
-last_preset_folder_state = None
-kill_threads = False
+# Folder names
+name_in_preset_3d: str = "3D"
+name_in_preset_armor_files_properties: str = "armor_file_properties"
+name_in_preset_overlay_images: str = "overlay_images"
+name_in_preset_ways_to_icons: str = "ways_to_icons"
 
-icons_list = []
-armor_texture_list = []
 
-save_folder_path = ''
+# Pathes and files
+the_fldr: str = f"{getcwd()}/{name} {version}"
+p_fldr_program: str = f"{the_fldr}/Program"
 
-button_enabled_style = "background-color: rgb(31, 30, 30); " \
-                 "border-radius: 5px; " \
-                 "border: 2px solid  rgb(74, 74, 74); " \
-                 "color: rgb(255, 255, 255)"
+p_fldr_presets: str = f"{the_fldr}/Presets"
 
-button_disabled_style = "background-color: rgb(15, 15, 15); " \
-                  "border-radius: 5px; " \
-                  "border: 2px solid  rgb(23, 23, 23); " \
-                  "color: rgb(64, 64, 64)"
+p_file_ui: str = f"{p_fldr_program}/costumator.ui"
+p_program_settings_json: str = f"{p_fldr_program}/settings.json"
+
+
+# Pathes to default TextureButtons images
+p_fldr_empty_texture_buttons: str = f"{p_fldr_program}/Icons/Empty TextureButton"
+
+p_icon_button_disabled: str = f"{p_fldr_program}/Icons/no_folder.png"
+
+p_empty_texture_button_helmet: str = f"{p_fldr_empty_texture_buttons}/helmet.png"
+p_empty_texture_button_boots: str = f"{p_fldr_empty_texture_buttons}/boots.png"
+p_empty_texture_button_chestplate: str = f"{p_fldr_empty_texture_buttons}/chestplate.png"
+p_empty_texture_button_leggings: str = f"{p_fldr_empty_texture_buttons}/leggings.png"
+
+p_empty_texture_button_layer_1: str = f"{p_fldr_empty_texture_buttons}/layer_1.png"
+p_empty_texture_button_layer_2: str = f"{p_fldr_empty_texture_buttons}/layer_2.png"
+
+
+# Button styles
+button_enabled_style: str = "background-color: rgb(31, 30, 30); " \
+                            "border-radius: 5px; " \
+                            "border: 2px solid  rgb(74, 74, 74); " \
+                            "color: rgb(255, 255, 255)"
+
+button_disabled_style: str = "background-color: rgb(15, 15, 15); " \
+                             "border-radius: 5px; " \
+                             "border: 2px solid  rgb(23, 23, 23); " \
+                             "color: rgb(64, 64, 64)"
+
+# Error messages
+folder_name_errors = {1: "Required field!",
+                      2: "Delete or move existing folders!"}
+save_path_errors = {1: "Required field!",
+                    2: "Invalid path!"}
