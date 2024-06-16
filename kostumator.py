@@ -82,7 +82,6 @@ class Costumator(QWidget):
         self.p_save_folder: str = ""
 
         self.kill_threads: bool = False
-        self.last_preset_folder_state = None
 
         self.save_folder_is_ok: bool = False
         self.presets_is_ok: bool = False
@@ -175,13 +174,6 @@ class Costumator(QWidget):
             self.folder_name_changed()
 
     def update_presets(self) -> None:
-        current_state_of_presets_folder = listdir(settings.p_fldr_presets)
-
-        if self.last_preset_folder_state == current_state_of_presets_folder:
-            return
-
-        self.last_preset_folder_state = current_state_of_presets_folder
-
         last_chosed_preset: str = self.presets.currentText()
 
         preset_list = [preset for preset in listdir(settings.p_fldr_presets) if path.isdir(f"{settings.p_fldr_presets}/{preset}")]
@@ -573,6 +565,7 @@ class Costumator(QWidget):
 
     def thread_watch_presets_folder(self) -> None:
         costumator_not_in_focus = True
+        last_preset_folder_state = None
 
         while not self.kill_threads:
             if not self.isActiveWindow():
@@ -580,7 +573,12 @@ class Costumator(QWidget):
 
             if self.isActiveWindow() and costumator_not_in_focus:
                 costumator_not_in_focus = False
-                self.update_presets()
+                
+                current_state_of_presets_folder = listdir(settings.p_fldr_presets)
+
+                if last_preset_folder_state != current_state_of_presets_folder:
+                    last_preset_folder_state = current_state_of_presets_folder
+                    self.update_presets()
 
             sleep(0.1)
 
