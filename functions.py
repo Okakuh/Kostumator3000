@@ -1,10 +1,10 @@
 from os import path
 from shutil import rmtree
-from PIL import Image
 from PyQt6.QtWidgets import QPushButton
 from PyQt6.QtGui import QPixmap, QPainter
 from subprocess import Popen
 from json import load, dump
+
 
 from settings import button_enabled_style, button_disabled_style
 

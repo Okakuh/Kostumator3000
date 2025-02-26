@@ -1,6 +1,6 @@
 from PyQt6.QtWidgets import QDialog, QDialogButtonBox, QVBoxLayout, QLabel, QLineEdit, QPushButton, \
     QTextEdit
-from PyQt6.QtGui import QIcon, QPixmap, QPainter, QIcon
+from PyQt6.QtGui import QIcon, QPixmap, QIcon
 from PyQt6.QtCore import QSize
 from os import path, listdir
 from pathlib import Path

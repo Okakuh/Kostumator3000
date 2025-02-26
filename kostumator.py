@@ -348,10 +348,6 @@ class Costumator(QWidget):
 
         self.display_name.setText("")
         self.folder_name.setText("")
-        self.save_folder.setText("")
-        self.path_to_icon_folder.setText("")
-        self.leather_armor_layer.setText("")
-        self.leather_icon_layer.setText("")
 
         self.folder_name_changed()
         self.display_name_changed()
