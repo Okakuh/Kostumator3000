@@ -1,7 +1,7 @@
 from os import getcwd
 
 name: str = "Kostumator3000"
-version: str = "1.0"
+version: str = "1.1"
 
 title: str = f"{name} {version}"
 
